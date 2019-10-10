@@ -28,18 +28,30 @@ router.post('/', function(req, res, next) {
           }
           return;
       }
-      api.listen((err, message) => {
-        var request = app.textRequest(message.body,{sessionId: '<UNIQUE SESSION ID>'});
-        request.on('response',(res)=>{
-          api.sendMessage(res, message.threadID);
-        })
-       
-      });
-      api.getFriendsList((err, data) => {
-        if(err) return console.error(err);
+      api.listen((err,messenger)=>{
+        // console.log("content messenger: ",messenger.body);
+        // console.log("type messenger :",typeof(messenger.body));
+        // console.log("json messenger:",messenger);
+
+        var request = app.textRequest(messenger.body, {
+          sessionId: '<unique session id>'
+          });
+          request.on('response', function(response) {
+            console.log(response);
+            api.sendMessage(response.result.fulfillment.speech,messenger.threadID);     
+          })
+          request.on('error', function(error) {
+              console.log(error);
+              api.sendMessage("nhắn không hiểu gì ???",messenger.threadID);  
+          });
+          
+          request.end();
+      })
+      // api.sendTypingIndicator('100009081543935',(err)=>{
+      //   if(err) console.log(err);
+      // })      
+        
     
-        console.log(data.length);
-    });
 });
 })
 
