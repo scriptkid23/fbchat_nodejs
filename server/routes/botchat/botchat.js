@@ -2,13 +2,14 @@ var express = require('express');
 var router = express.Router();
 const  login = require('facebook-chat-api')
 var apiai = require('apiai');
-var app  = apiai("6cf2e7f90d5e4f56bc3bfc988158d35d");
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
     res.send('/api-botchat')
   });
   
 router.post('/', function(req, res, next) {
+    var app  = apiai(req.body.token); 
     const email = req.body.email;
     const password = req.body.password;
     login({email:email,password:password},(err,api)=>{
@@ -38,12 +39,19 @@ router.post('/', function(req, res, next) {
           });
           request.on('response', function(response) {
             console.log(response);
-            api.sendMessage(response.result.fulfillment.speech,messenger.threadID);     
+            api.sendMessage(response.result.fulfillment.speech,messenger.threadID);    
+
           })
           request.on('error', function(error) {
               console.log(error);
               api.sendMessage("nhắn không hiểu gì ???",messenger.threadID);  
           });
+          if(messenger.body === "exit"){
+            api.sendMessage("em là kroot ứng dụng botchat do anh Hoàn đẹp trai phát triển, em thoát đây ạ, bye <3 <3 <3 ",messenger.threadID);
+            api.logout((err) => {
+              if(err) console.log(err);
+            })
+          }
           
           request.end();
       })

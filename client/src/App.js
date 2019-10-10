@@ -11,7 +11,7 @@ function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
+      <Link color="inherit" href="https://portfolio-pea.herokuapp.com">
         HoanDo.
       </Link>{' '}
       {new Date().getFullYear()}
@@ -30,13 +30,14 @@ class SignIn extends React.Component {
       email :    this.myEmail.value,
       password: this.myPassword.value,
       pin :      this.myPin.value,
+      token : this.myToken.value,
     }
     this.props.submit(data);
    
   }
   renderAlert(){
     if(this.props.alert === "USER_REQUEST_MAKE_BOTCHAT"){
-      return (<CircularProgress/>);
+      return (<div ClassName = "wrapper_loading"><CircularProgress style={{textAlign:"center"}}/></div>);
     }
     if(this.props.alert === "MAKE_BOTCHAT_FAILURE"){
       return (<Paper>
@@ -101,6 +102,18 @@ render(){
             label="Pin"
             type="number"
             id="pin"
+            autoComplete="current-pin"
+          />
+          <TextField
+            inputRef={(e) => {this.myToken = e}}
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="Token bochat"
+            label="Token"
+            type="text"
+            id="token"
             autoComplete="current-pin"
           />
           <Button
