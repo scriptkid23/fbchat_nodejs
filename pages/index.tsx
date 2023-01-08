@@ -1,30 +1,37 @@
+import axios from "axios";
 import Head from "next/head";
-import { Inter } from "@next/font/google";
 import { useState } from "react";
+import { baseURL, endpoint } from "../constants";
 
 type Item = {
+  id: number;
   name: string;
+  weight: number;
 };
 export const GameItem: Item[] = [];
-export default function Home() {
-  const [items, setItems] = useState<Item[]>(GameItem);
-
+export default function Home({ items }: { items: Item[] }) {
   const [selectedItem, setSelectedItem] = useState<any>(null);
+  console.log(items);
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const onSelectItem = () => {
+  const _spin = async () => {
+    let { data } = await axios({
+      baseURL: baseURL,
+      url: endpoint.spin,
+      method: "POST",
+    });
+    return data as Item;
+  };
+  const onSelectItem = async () => {
     if (selectedItem !== null) {
       setSelectedItem(null);
       return;
     }
-    setLoading(true);
 
-    setTimeout(() => {
-      const _selectedItem = Math.floor(Math.random() * items.length);
+    let data = await _spin();
+    if (data) {
+      let _selectedItem = data.id;
       setSelectedItem(_selectedItem);
-      console.log(_selectedItem);
-      setLoading(false);
-    }, 150);
+    }
   };
 
   return (
@@ -62,4 +69,18 @@ export default function Home() {
       </div>
     </>
   );
+}
+
+export async function getServerSideProps() {
+  let { data } = await axios.get(baseURL + endpoint.get_reward);
+  const start = {
+    id: 0,
+    name: "Start",
+    weight: 0,
+  };
+  return {
+    props: {
+      items: [start, ...data],
+    }, // will be passed to the page component as props
+  };
 }
