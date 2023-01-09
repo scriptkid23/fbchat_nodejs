@@ -11,7 +11,6 @@ type Item = {
 export const GameItem: Item[] = [];
 export default function Home({ items }: { items: Item[] }) {
   const [selectedItem, setSelectedItem] = useState<any>(null);
-  console.log(items);
 
   const _spin = async () => {
     let { data } = await axios({
